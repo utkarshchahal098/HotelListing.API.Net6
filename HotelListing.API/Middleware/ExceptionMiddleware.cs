@@ -24,12 +24,13 @@ namespace HotelListing.API.Middleware
             {
                 await _next(context);
             }
-            catch (Exception )
+            catch (Exception ex )
             {
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 context.Response.ContentType = "application/json";
 
-                var response = new GlobalException(context.Response.StatusCode, "Internal server error");
+                var response = _environment.IsDevelopment()? new GlobalException(context.Response.StatusCode, ex.Message, ex.StackTrace?.ToString()) :
+                new GlobalException(context.Response.StatusCode, "Internal server error");
 
                 var options = new JsonSerializerOptions
                 {
